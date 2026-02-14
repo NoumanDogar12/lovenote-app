@@ -1,26 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "motion/react";
-
-declare global {
-  interface Window {
-    YT: {
-      Player: new (
-        el: string | HTMLElement,
-        config: {
-          height: string;
-          width: string;
-          videoId: string;
-          playerVars: Record<string, number>;
-          events: Record<string, (e: { target: { playVideo: () => void } }) => void>;
-        }
-      ) => { playVideo: () => void; pauseVideo: () => void; destroy: () => void };
-      PlayerState: { PLAYING: number };
-    };
-    onYouTubeIframeAPIReady: () => void;
-  }
-}
 
 export default function MusicPlayer({
   musicUrl,
@@ -31,11 +12,8 @@ export default function MusicPlayer({
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [faded, setFaded] = useState(false);
-  const [apiReady, setApiReady] = useState(false);
-  const [autoStarted, setAutoStarted] = useState(false);
-  const playerRef = useRef<{ playVideo: () => void; pauseVideo: () => void; destroy: () => void } | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const userInteractedRef = useRef(false);
+  const [started, setStarted] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Extract YouTube video ID
   const getVideoId = (url: string) => {
@@ -47,110 +25,19 @@ export default function MusicPlayer({
 
   const videoId = musicUrl ? getVideoId(musicUrl) : null;
 
-  // Load YouTube IFrame API
+  // Fade button after 3s
   useEffect(() => {
-    if (!videoId) return;
-    if (window.YT && window.YT.Player) {
-      setApiReady(true);
-      return;
-    }
+    const timer = setTimeout(() => setFaded(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
-    // Check if script is already loading
-    const existing = document.querySelector('script[src*="youtube.com/iframe_api"]');
-    if (!existing) {
-      const tag = document.createElement("script");
-      tag.src = "https://www.youtube.com/iframe_api";
-      document.head.appendChild(tag);
-    }
-
-    // Store previous callback to chain if needed
-    const prev = window.onYouTubeIframeAPIReady;
-    window.onYouTubeIframeAPIReady = () => {
-      prev?.();
-      setApiReady(true);
-    };
-
-    // Poll as fallback in case callback already fired
-    const poll = setInterval(() => {
-      if (window.YT && window.YT.Player) {
-        setApiReady(true);
-        clearInterval(poll);
-      }
-    }, 200);
-
-    return () => clearInterval(poll);
-  }, [videoId]);
-
-  const initPlayer = useCallback(() => {
-    if (!videoId || !apiReady || !containerRef.current) return;
-    if (playerRef.current) return;
-
-    playerRef.current = new window.YT.Player(containerRef.current, {
-      height: "0",
-      width: "0",
-      videoId,
-      playerVars: {
-        autoplay: 1,
-        loop: 1,
-        playlist: videoId as unknown as number,
-        controls: 0,
-        disablekb: 1,
-        fs: 0,
-        modestbranding: 1,
-        playsinline: 1,
-      },
-      events: {
-        onReady: (e: { target: { playVideo: () => void } }) => {
-          e.target.playVideo();
-          setIsPlaying(true);
-        },
-      },
-    });
-  }, [videoId, apiReady]);
-
-  // Track user interaction from mount — runs before API is ready
+  // Auto-start on first user interaction
   useEffect(() => {
-    if (!videoId || autoStarted) return;
+    if (!videoId || started) return;
 
-    function markInteracted() {
-      userInteractedRef.current = true;
-      cleanup();
-    }
-
-    function cleanup() {
-      window.removeEventListener("click", markInteracted);
-      window.removeEventListener("touchstart", markInteracted);
-      window.removeEventListener("scroll", markInteracted);
-      window.removeEventListener("keydown", markInteracted);
-    }
-
-    // If user already scrolled (pasted URL, scrolled before JS loaded)
-    if (window.scrollY > 0) {
-      userInteractedRef.current = true;
-    } else {
-      window.addEventListener("click", markInteracted, { once: true });
-      window.addEventListener("touchstart", markInteracted, { once: true });
-      window.addEventListener("scroll", markInteracted, { once: true });
-      window.addEventListener("keydown", markInteracted, { once: true });
-    }
-
-    return cleanup;
-  }, [videoId, autoStarted]);
-
-  // When API is ready + user has interacted → start player
-  useEffect(() => {
-    if (!apiReady || !videoId || autoStarted) return;
-
-    if (userInteractedRef.current) {
-      initPlayer();
-      setAutoStarted(true);
-      return;
-    }
-
-    // API is ready but user hasn't interacted yet — listen for it
     function handleInteraction() {
-      initPlayer();
-      setAutoStarted(true);
+      setStarted(true);
+      setIsPlaying(true);
       cleanup();
     }
 
@@ -167,35 +54,28 @@ export default function MusicPlayer({
     window.addEventListener("keydown", handleInteraction, { once: true });
 
     return cleanup;
-  }, [apiReady, videoId, autoStarted, initPlayer]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setFaded(true), 3000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Cleanup player on unmount
-  useEffect(() => {
-    return () => {
-      playerRef.current?.destroy();
-    };
-  }, []);
+  }, [videoId, started]);
 
   if (!videoId) return null;
 
-  const handleToggle = () => {
-    if (!playerRef.current) {
-      initPlayer();
-      setAutoStarted(true);
-      setFaded(false);
-      return;
-    }
+  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&controls=0&disablekb=1&fs=0&modestbranding=1&playsinline=1&enablejsapi=1`;
 
-    if (isPlaying) {
-      playerRef.current.pauseVideo();
+  const handleToggle = () => {
+    if (!started) {
+      setStarted(true);
+      setIsPlaying(true);
+    } else if (isPlaying) {
+      // Post message to iframe to pause
+      iframeRef.current?.contentWindow?.postMessage(
+        JSON.stringify({ event: "command", func: "pauseVideo", args: [] }),
+        "*"
+      );
       setIsPlaying(false);
     } else {
-      playerRef.current.playVideo();
+      iframeRef.current?.contentWindow?.postMessage(
+        JSON.stringify({ event: "command", func: "playVideo", args: [] }),
+        "*"
+      );
       setIsPlaying(true);
     }
     setFaded(false);
@@ -203,8 +83,26 @@ export default function MusicPlayer({
 
   return (
     <>
-      {/* Player container — must not be display:none or YT API won't init */}
-      <div ref={containerRef} className="fixed -left-[9999px] -top-[9999px] w-0 h-0 overflow-hidden" />
+      {/* YouTube iframe — only rendered after user interaction */}
+      {started && (
+        <iframe
+          ref={iframeRef}
+          src={embedUrl}
+          allow="autoplay; encrypted-media"
+          style={{
+            position: "fixed",
+            width: 1,
+            height: 1,
+            left: 0,
+            bottom: 0,
+            opacity: 0,
+            pointerEvents: "none",
+            zIndex: -1,
+            border: "none",
+          }}
+          title="Background music"
+        />
+      )}
 
       {/* Play/Pause button */}
       <motion.button
