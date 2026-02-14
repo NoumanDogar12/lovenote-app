@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getMyValentines } from "@/actions/valentines";
 import DashboardCard from "@/components/DashboardCard";
 import Navbar from "@/components/Navbar";
 import ValentineDecorations from "@/components/ValentineDecorations";
+
+export const metadata: Metadata = {
+  title: "Your Valentines",
+  robots: { index: false, follow: false },
+};
 
 export default async function DashboardPage() {
   let valentines;

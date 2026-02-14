@@ -24,9 +24,9 @@ export default function LandingPage() {
 
         {/* Nav */}
         <nav className="relative z-20 max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-white font-[var(--font-playfair)] drop-shadow-sm">
+          <span className="text-2xl font-bold text-white font-[var(--font-playfair)] drop-shadow-sm">
             LoveNote
-          </h1>
+          </span>
           <div className="flex items-center gap-3">
             <Link
               href="/login"
@@ -60,7 +60,7 @@ export default function LandingPage() {
               Make it unforgettable
             </motion.p>
 
-            <motion.h2
+            <motion.h1
               className="text-6xl md:text-8xl font-bold text-white font-[var(--font-playfair)] mb-7 leading-[1.05]"
               style={{ textShadow: "0 2px 20px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.1)" }}
               initial={{ opacity: 0, y: 24 }}
@@ -70,7 +70,7 @@ export default function LandingPage() {
               Ask Your Valentine
               <br />
               <span className="text-rose-200">In Style</span>
-            </motion.h2>
+            </motion.h1>
 
             <motion.p
               className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto mb-12 leading-relaxed"
@@ -79,8 +79,9 @@ export default function LandingPage() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.5, ease }}
             >
-              Create a beautiful, animated love story website for your valentine.
-              Pick a template, add your photos & messages, and share the magic.
+
+              Create a personalized &ldquo;Will You Be My Valentine?&rdquo; website
+              with photos, love messages & music. Share a unique valentine link.
             </motion.p>
 
             <motion.div
@@ -138,11 +139,11 @@ export default function LandingPage() {
                 Simple as 1, 2, 3
               </span>
             </motion.div>
-            <h3 className="text-4xl md:text-6xl font-bold text-rose-900 font-[var(--font-playfair)] leading-tight mb-4">
+            <h2 className="text-4xl md:text-6xl font-bold text-rose-900 font-[var(--font-playfair)] leading-tight mb-4">
               Three Steps to
               <br />
               Their Heart
-            </h3>
+            </h2>
             <p className="text-rose-700/50 max-w-lg mx-auto text-base">
               Creating your perfect valentine takes just minutes. Here&apos;s how the magic happens.
             </p>
@@ -405,9 +406,9 @@ export default function LandingPage() {
             <p className="text-rose-500/80 text-xs font-bold uppercase tracking-[0.3em] mb-3">
               Handcrafted themes
             </p>
-            <h3 className="text-4xl md:text-5xl font-bold text-rose-900 font-[var(--font-playfair)] mb-4">
-              6 Stunning Templates
-            </h3>
+            <h2 className="text-4xl md:text-5xl font-bold text-rose-900 font-[var(--font-playfair)] mb-4">
+              6 Stunning Valentine Templates
+            </h2>
             <p className="text-rose-700/50 max-w-xl mx-auto">
               From classic romance to modern minimalist, find the perfect style
               for your love story
@@ -474,9 +475,9 @@ export default function LandingPage() {
             <p className="text-rose-400 text-xs font-bold uppercase tracking-[0.3em] mb-3">
               Simple pricing
             </p>
-            <h3 className="text-5xl font-bold text-rose-900 mb-1 font-[var(--font-playfair)]">
+            <h2 className="text-5xl font-bold text-rose-900 mb-1 font-[var(--font-playfair)]">
               $9.99
-            </h3>
+            </h2>
             <p className="text-rose-700/50 mb-8 text-sm">
               One-time payment. No subscriptions. No hidden fees.
             </p>

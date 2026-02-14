@@ -28,36 +28,73 @@ const sourceSans = Source_Sans_3({ subsets: ["latin"], variable: "--font-source-
 const caveat = Caveat({ subsets: ["latin"], variable: "--font-caveat", display: "swap" });
 const poppins = Poppins({ subsets: ["latin"], weight: ["300", "400", "600", "700"], variable: "--font-poppins", display: "swap" });
 
+const siteUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "LoveNote - Ask Your Valentine In Style",
+    default:
+      "LoveNote - Will You Be My Valentine? | Create a Valentine Proposal Website",
     template: "%s | LoveNote",
   },
   description:
-    "Create a beautiful, personalized Valentine's Day proposal. Pick a template, add your photos & messages, and share the magic. Just $9.99.",
+    "Create a beautiful, personalized 'Will You Be My Valentine?' website with photos, love messages, music & animations. Pick a template, customize everything, and share a unique valentine link. The most romantic way to ask your valentine online.",
   keywords: [
-    "valentine",
-    "valentine's day",
-    "proposal",
+    "will you be my valentine",
     "be my valentine",
-    "love note",
-    "valentine card",
     "valentine website",
+    "valentine proposal website",
+    "valentine link generator",
+    "valentine card online",
+    "digital valentine card",
+    "personalized valentine",
+    "valentine proposal online",
+    "ask your valentine",
+    "valentine yes or no website",
+    "valentine surprise link",
+    "custom valentine website",
+    "animated valentine proposal",
+    "valentine card with photos",
+    "valentine card maker",
+    "valentine website builder",
+    "send valentine online",
+    "romantic valentine proposal",
+    "valentine's day",
+    "love note",
   ],
   openGraph: {
-    title: "LoveNote - Ask Your Valentine In Style",
+    title: "LoveNote - Create a Beautiful Valentine Proposal Website",
     description:
-      "Create a beautiful, personalized Valentine's Day proposal. Just $9.99.",
+      "The most romantic way to ask 'Will You Be My Valentine?' - Create a personalized website with photos, messages, music & animations. Share a unique link.",
     type: "website",
     siteName: "LoveNote",
+    url: siteUrl,
+    locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
     title: "LoveNote - Ask Your Valentine In Style",
     description:
-      "Create a beautiful, personalized Valentine's Day proposal. Just $9.99.",
+      "Create a personalized Valentine proposal website with photos, love messages & music. Share a unique link.",
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_URL || "http://localhost:3000"),
+  alternates: {
+    canonical: siteUrl,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  other: {
+    "theme-color": "#E11D48",
+    "apple-mobile-web-app-title": "LoveNote",
+  },
 };
 
 export default function RootLayout({
@@ -70,9 +107,44 @@ export default function RootLayout({
     dmSerif, dmSans, bebas, sourceSans, caveat, poppins,
   ].map((f) => f.variable).join(" ");
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        name: "LoveNote",
+        url: siteUrl,
+        description:
+          "Create a beautiful, personalized Valentine proposal website with photos, love messages, music & animations.",
+      },
+      {
+        "@type": "Organization",
+        name: "LoveNote",
+        url: siteUrl,
+        logo: `${siteUrl}/favicon.ico`,
+      },
+      {
+        "@type": "Product",
+        name: "LoveNote Valentine Proposal",
+        description:
+          "Personalized Valentine's Day proposal website with 6 templates, photos, messages, music, and shareable link.",
+        offers: {
+          "@type": "Offer",
+          price: "9.99",
+          priceCurrency: "USD",
+          availability: "https://schema.org/InStock",
+        },
+      },
+    ],
+  };
+
   return (
     <html lang="en">
       <body className={`${fontVars} font-[var(--font-lato)] antialiased`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         {children}
       </body>
     </html>
