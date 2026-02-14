@@ -27,6 +27,136 @@ function FlowerSVG({ color, size }: { color: string; size: number }) {
   );
 }
 
+type Particle = {
+  id: number;
+  x: number;
+  type: "flower" | "heart" | "confetti" | "sparkle";
+  color: string;
+  size: number;
+  delay: number;
+  duration: number;
+};
+
+function ParticleRenderer({ particles }: { particles: Particle[] }) {
+  return (
+    <>
+      {particles.map((p) => {
+        if (p.type === "flower") {
+          return (
+            <motion.div
+              key={p.id}
+              className="absolute"
+              style={{ left: `${p.x}%`, bottom: "-60px" }}
+              initial={{ y: 0, opacity: 0, rotate: 0 }}
+              animate={{
+                y: [0, -(typeof window !== "undefined" ? window.innerHeight : 800) - 100],
+                opacity: [0, 1, 0.9, 0],
+                rotate: [0, Math.random() > 0.5 ? 360 : -360],
+                x: [0, Math.sin(p.id) * 40],
+              }}
+              transition={{
+                duration: p.duration,
+                delay: p.delay,
+                ease: "easeOut",
+                repeat: Infinity,
+                repeatDelay: 1,
+              }}
+            >
+              <FlowerSVG color={p.color} size={p.size} />
+            </motion.div>
+          );
+        }
+
+        if (p.type === "heart") {
+          return (
+            <motion.div
+              key={p.id}
+              className="absolute"
+              style={{
+                left: `${p.x}%`,
+                bottom: "-40px",
+                fontSize: `${p.size}px`,
+                color: p.color,
+              }}
+              initial={{ y: 0, opacity: 0 }}
+              animate={{
+                y: [0, -(typeof window !== "undefined" ? window.innerHeight : 800)],
+                opacity: [0, 0.8, 0],
+                x: [0, Math.sin(p.id * 0.5) * 30],
+              }}
+              transition={{
+                duration: p.duration,
+                delay: p.delay,
+                ease: "easeOut",
+                repeat: Infinity,
+                repeatDelay: 2,
+              }}
+            >
+              &#10084;
+            </motion.div>
+          );
+        }
+
+        if (p.type === "confetti") {
+          return (
+            <motion.div
+              key={p.id}
+              className="absolute"
+              style={{
+                left: `${p.x}%`,
+                top: "-20px",
+                width: p.size,
+                height: p.size * 0.6,
+                backgroundColor: p.color,
+                borderRadius: "2px",
+              }}
+              initial={{ y: 0, rotate: 0, opacity: 1 }}
+              animate={{
+                y: [0, (typeof window !== "undefined" ? window.innerHeight : 800) + 50],
+                rotate: [0, Math.random() * 720],
+                opacity: [1, 1, 0],
+                x: [0, Math.sin(p.id) * 40],
+              }}
+              transition={{
+                duration: p.duration,
+                delay: p.delay,
+                ease: "easeIn",
+                repeat: Infinity,
+                repeatDelay: 3,
+              }}
+            />
+          );
+        }
+
+        // sparkle
+        return (
+          <motion.div
+            key={p.id}
+            className="absolute rounded-full"
+            style={{
+              left: `${p.x}%`,
+              top: `${Math.random() * 80 + 10}%`,
+              width: p.size,
+              height: p.size,
+              backgroundColor: p.color,
+            }}
+            animate={{
+              opacity: [0, 1, 0],
+              scale: [0.5, 1.5, 0.5],
+            }}
+            transition={{
+              duration: p.duration,
+              delay: p.delay,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        );
+      })}
+    </>
+  );
+}
+
 export default function CelebrationSection({
   senderName,
   recipientName,
@@ -36,17 +166,8 @@ export default function CelebrationSection({
   recipientName: string;
   template: TemplateTheme;
 }) {
-  const [particles, setParticles] = useState<
-    {
-      id: number;
-      x: number;
-      type: "flower" | "heart" | "confetti" | "sparkle";
-      color: string;
-      size: number;
-      delay: number;
-      duration: number;
-    }[]
-  >([]);
+  const [leftParticles, setLeftParticles] = useState<Particle[]>([]);
+  const [rightParticles, setRightParticles] = useState<Particle[]>([]);
 
   useEffect(() => {
     const colors = [
@@ -62,13 +183,19 @@ export default function CelebrationSection({
 
     const flowerColors = ["#FF69B4", "#FF6B9D", "#FB7185", "#F472B6", "#EC4899", "#C084FC", "#A78BFA", "#FFD700"];
 
-    const items: typeof particles = [];
+    const left: Particle[] = [];
+    const right: Particle[] = [];
+
+    // Helper: x position within a strip (0-100% of that strip's width)
+    const randX = () => Math.random() * 100;
+    // Helper: pick left or right array
+    const pickSide = () => (Math.random() > 0.5 ? left : right);
 
     // Flowers rising from bottom
     for (let i = 0; i < 18; i++) {
-      items.push({
+      pickSide().push({
         id: i,
-        x: Math.random() * 100,
+        x: randX(),
         type: "flower",
         color: flowerColors[Math.floor(Math.random() * flowerColors.length)],
         size: Math.random() * 20 + 20,
@@ -79,9 +206,9 @@ export default function CelebrationSection({
 
     // Hearts
     for (let i = 0; i < 15; i++) {
-      items.push({
+      pickSide().push({
         id: 100 + i,
-        x: Math.random() * 100,
+        x: randX(),
         type: "heart",
         color: colors[Math.floor(Math.random() * colors.length)],
         size: Math.random() * 20 + 14,
@@ -92,9 +219,9 @@ export default function CelebrationSection({
 
     // Confetti falling from top
     for (let i = 0; i < 40; i++) {
-      items.push({
+      pickSide().push({
         id: 200 + i,
-        x: Math.random() * 100,
+        x: randX(),
         type: "confetti",
         color: colors[Math.floor(Math.random() * colors.length)],
         size: Math.random() * 8 + 4,
@@ -105,9 +232,9 @@ export default function CelebrationSection({
 
     // Sparkles
     for (let i = 0; i < 12; i++) {
-      items.push({
+      pickSide().push({
         id: 300 + i,
-        x: Math.random() * 100,
+        x: randX(),
         type: "sparkle",
         color: "#FFD700",
         size: Math.random() * 6 + 3,
@@ -116,126 +243,20 @@ export default function CelebrationSection({
       });
     }
 
-    setParticles(items);
+    setLeftParticles(left);
+    setRightParticles(right);
   }, [template]);
 
   return (
     <section className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
-      {/* Particle effects */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {particles.map((p) => {
-          if (p.type === "flower") {
-            return (
-              <motion.div
-                key={p.id}
-                className="absolute"
-                style={{ left: `${p.x}%`, bottom: "-60px" }}
-                initial={{ y: 0, opacity: 0, rotate: 0 }}
-                animate={{
-                  y: [0, -(typeof window !== "undefined" ? window.innerHeight : 800) - 100],
-                  opacity: [0, 1, 0.9, 0],
-                  rotate: [0, Math.random() > 0.5 ? 360 : -360],
-                  x: [0, Math.sin(p.id) * 60],
-                }}
-                transition={{
-                  duration: p.duration,
-                  delay: p.delay,
-                  ease: "easeOut",
-                  repeat: Infinity,
-                  repeatDelay: 1,
-                }}
-              >
-                <FlowerSVG color={p.color} size={p.size} />
-              </motion.div>
-            );
-          }
+      {/* Left edge strip — clipped so particles can't enter center */}
+      <div className="absolute top-0 left-0 w-[22%] h-full pointer-events-none overflow-hidden">
+        <ParticleRenderer particles={leftParticles} />
+      </div>
 
-          if (p.type === "heart") {
-            return (
-              <motion.div
-                key={p.id}
-                className="absolute"
-                style={{
-                  left: `${p.x}%`,
-                  bottom: "-40px",
-                  fontSize: `${p.size}px`,
-                  color: p.color,
-                }}
-                initial={{ y: 0, opacity: 0 }}
-                animate={{
-                  y: [0, -(typeof window !== "undefined" ? window.innerHeight : 800)],
-                  opacity: [0, 0.8, 0],
-                  x: [0, Math.sin(p.id * 0.5) * 50],
-                }}
-                transition={{
-                  duration: p.duration,
-                  delay: p.delay,
-                  ease: "easeOut",
-                  repeat: Infinity,
-                  repeatDelay: 2,
-                }}
-              >
-                &#10084;
-              </motion.div>
-            );
-          }
-
-          if (p.type === "confetti") {
-            return (
-              <motion.div
-                key={p.id}
-                className="absolute"
-                style={{
-                  left: `${p.x}%`,
-                  top: "-20px",
-                  width: p.size,
-                  height: p.size * 0.6,
-                  backgroundColor: p.color,
-                  borderRadius: "2px",
-                }}
-                initial={{ y: 0, rotate: 0, opacity: 1 }}
-                animate={{
-                  y: [0, (typeof window !== "undefined" ? window.innerHeight : 800) + 50],
-                  rotate: [0, Math.random() * 720],
-                  opacity: [1, 1, 0],
-                  x: [0, Math.sin(p.id) * 80],
-                }}
-                transition={{
-                  duration: p.duration,
-                  delay: p.delay,
-                  ease: "easeIn",
-                  repeat: Infinity,
-                  repeatDelay: 3,
-                }}
-              />
-            );
-          }
-
-          // sparkle
-          return (
-            <motion.div
-              key={p.id}
-              className="absolute rounded-full"
-              style={{
-                left: `${p.x}%`,
-                top: `${Math.random() * 80 + 10}%`,
-                width: p.size,
-                height: p.size,
-                backgroundColor: p.color,
-              }}
-              animate={{
-                opacity: [0, 1, 0],
-                scale: [0.5, 1.5, 0.5],
-              }}
-              transition={{
-                duration: p.duration,
-                delay: p.delay,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            />
-          );
-        })}
+      {/* Right edge strip — clipped so particles can't enter center */}
+      <div className="absolute top-0 right-0 w-[22%] h-full pointer-events-none overflow-hidden">
+        <ParticleRenderer particles={rightParticles} />
       </div>
 
       {/* Main content */}
@@ -307,7 +328,7 @@ export default function CelebrationSection({
           ))}
         </div>
 
-        {/* Flower ring around the text */}
+        {/* Flower ring */}
         <div className="flex justify-center gap-2 mt-8">
           {["#FF69B4", "#FFD700", "#FF6B9D", "#C084FC", "#FB7185"].map((color, i) => (
             <motion.div

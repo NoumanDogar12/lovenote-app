@@ -200,6 +200,43 @@ export async function reorderPhotos(valentineId: string, photoIds: string[]) {
   revalidatePath(`/create/${valentineId}`);
 }
 
+export async function deleteValentine(id: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("Unauthorized");
+
+  // Delete photos from storage first
+  const { data: photos } = await supabase
+    .from("valentine_photos")
+    .select("storage_path")
+    .eq("valentine_id", id);
+
+  if (photos && photos.length > 0) {
+    await supabase.storage
+      .from("valentine-photos")
+      .remove(photos.map((p) => p.storage_path));
+
+    await supabase.from("valentine_photos").delete().eq("valentine_id", id);
+  }
+
+  // Delete responses
+  await supabase.from("valentine_responses").delete().eq("valentine_id", id);
+
+  // Delete the valentine itself (only if owned by user)
+  const { error } = await supabase
+    .from("valentines")
+    .delete()
+    .eq("id", id)
+    .eq("user_id", user.id);
+
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/dashboard");
+}
+
 export async function getPublishedValentine(id: string) {
   const supabase = await createClient();
 

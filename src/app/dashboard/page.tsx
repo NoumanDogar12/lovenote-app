@@ -21,25 +21,25 @@ export default async function DashboardPage() {
 
       <div className="max-w-5xl mx-auto px-6 py-10 relative z-10">
         {/* Header */}
-        <div className="flex items-center justify-between mb-10">
+        <div className="flex flex-col items-center text-center sm:flex-row sm:items-center sm:text-left sm:justify-between gap-4 mb-10">
           <div>
-            <div className="flex items-center gap-3 mb-1">
-              <h1 className="text-3xl font-bold text-rose-900 font-[var(--font-playfair)]">
+            <div className="flex items-center justify-center sm:justify-start gap-3 mb-1">
+              <h1 className="text-2xl sm:text-3xl font-bold text-rose-900 font-[var(--font-playfair)]">
                 Your Valentines
               </h1>
               {valentines.length > 0 && (
-                <span className="bg-rose-100/80 text-rose-500 text-xs font-bold px-2.5 py-1 rounded-full">
+                <span className="bg-rose-100/80 text-rose-600 text-xs font-bold px-2.5 py-1 rounded-full">
                   {valentines.length}
                 </span>
               )}
             </div>
-            <p className="text-rose-700/50 text-sm">
+            <p className="text-rose-800/50 text-sm">
               Manage and track your love notes
             </p>
           </div>
           <Link
             href="/create"
-            className="btn-premium text-white px-6 py-2.5 rounded-xl font-medium text-sm inline-flex items-center gap-2"
+            className="btn-premium text-white px-6 py-2.5 rounded-xl font-medium text-sm inline-flex items-center justify-center gap-2 w-full sm:w-auto"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="10" />
@@ -52,7 +52,7 @@ export default async function DashboardPage() {
 
         {/* Empty state */}
         {valentines.length === 0 && (
-          <div className="glass-card-strong rounded-3xl p-16 text-center relative overflow-hidden">
+          <div className="glass-card-strong rounded-3xl px-6 py-12 sm:p-16 text-center relative overflow-hidden">
             {/* Decorative background hearts */}
             <div className="absolute inset-0 pointer-events-none opacity-[0.04]">
               <svg className="absolute top-8 left-12 w-20 h-20" viewBox="0 0 24 24" fill="currentColor">
@@ -78,7 +78,7 @@ export default async function DashboardPage() {
             <h2 className="text-2xl font-bold text-rose-900 mb-2 font-[var(--font-playfair)]">
               No valentines yet
             </h2>
-            <p className="text-rose-700/50 mb-8 text-sm max-w-sm mx-auto leading-relaxed">
+            <p className="text-rose-800/50 mb-8 text-sm max-w-sm mx-auto leading-relaxed">
               Create your first valentine and make someone&apos;s day unforgettable with a beautiful animated love story
             </p>
             <Link

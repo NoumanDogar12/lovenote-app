@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { getTemplate } from "@/lib/templates";
+import { deleteValentine } from "@/actions/valentines";
 import SharePanel from "./SharePanel";
 import { useState } from "react";
 import { motion } from "motion/react";
@@ -95,6 +97,9 @@ function LockIcon({ className = "" }: { className?: string }) {
 
 export default function DashboardCard({ valentine: v }: DashboardCardProps) {
   const [showShare, setShowShare] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const router = useRouter();
   const template = getTemplate(v.template_id);
   const response = v.valentine_responses?.[0];
   const isExpired = v.expires_at && new Date(v.expires_at) < new Date();
@@ -179,6 +184,22 @@ export default function DashboardCard({ valentine: v }: DashboardCardProps) {
         {/* Gradient overlay for text readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
 
+        {/* Delete button - top left of header */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            setConfirmDelete(true);
+          }}
+          className="absolute top-3 left-3 z-10 w-7 h-7 rounded-full bg-black/25 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white/80 hover:text-white hover:bg-red-500/80 transition-all sm:opacity-0 sm:group-hover:opacity-100"
+          title="Delete"
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 6h18" />
+            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+          </svg>
+        </button>
+
         {/* Status badge - floating in header */}
         <div className="absolute top-3 right-3">
           <span
@@ -208,20 +229,20 @@ export default function DashboardCard({ valentine: v }: DashboardCardProps) {
             </h3>
           </div>
           {v.sender_name && (
-            <p className="text-xs text-rose-400/70 font-medium ml-6">
+            <p className="text-xs text-rose-500/70 font-medium ml-6">
               with love from {v.sender_name}
             </p>
           )}
         </div>
 
         {/* Meta row */}
-        <div className="flex items-center gap-2 text-[11px] text-rose-400/60 font-medium mb-4">
-          <ClockIcon className="text-rose-300/60" />
+        <div className="flex items-center gap-2 text-[11px] text-rose-500/60 font-medium mb-4">
+          <ClockIcon className="text-rose-400/60" />
           <span>{new Date(v.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</span>
           {daysLeft !== null && (
             <>
               <span className="w-1 h-1 rounded-full bg-rose-200" />
-              <span className={`${daysLeft <= 5 ? "text-amber-500 font-semibold" : "text-rose-400/60"}`}>
+              <span className={`${daysLeft <= 5 ? "text-amber-600 font-semibold" : "text-rose-500/60"}`}>
                 {daysLeft} {daysLeft === 1 ? "day" : "days"} left
               </span>
             </>
@@ -260,7 +281,7 @@ export default function DashboardCard({ valentine: v }: DashboardCardProps) {
         )}
 
         {/* Action buttons */}
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2">
           {status === "draft" && (
             <>
               <Link
@@ -268,11 +289,11 @@ export default function DashboardCard({ valentine: v }: DashboardCardProps) {
                 className="flex-1 inline-flex items-center justify-center gap-2 text-sm btn-premium text-white py-2.5 rounded-xl font-semibold"
               >
                 <PenIcon className="w-3.5 h-3.5" />
-                Continue
+                Continue Editing
               </Link>
               <Link
                 href={`/preview/${v.id}`}
-                className="inline-flex items-center justify-center gap-1.5 text-sm bg-rose-50/80 text-rose-500 hover:bg-rose-100/80 px-4 py-2.5 rounded-xl transition-all font-medium border border-rose-100/50"
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 text-sm bg-rose-50/80 text-rose-600 hover:bg-rose-100/80 px-4 py-2.5 rounded-xl transition-all font-medium border border-rose-100/50"
               >
                 <EyeIcon />
                 Preview
@@ -290,7 +311,7 @@ export default function DashboardCard({ valentine: v }: DashboardCardProps) {
               </button>
               <Link
                 href={`/v/${v.id}`}
-                className="inline-flex items-center justify-center gap-1.5 text-sm bg-rose-50/80 text-rose-500 hover:bg-rose-100/80 px-4 py-2.5 rounded-xl transition-all font-medium border border-rose-100/50"
+                className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 text-sm bg-rose-50/80 text-rose-600 hover:bg-rose-100/80 px-4 py-2.5 rounded-xl transition-all font-medium border border-rose-100/50"
                 target="_blank"
               >
                 <EyeIcon />
@@ -308,13 +329,47 @@ export default function DashboardCard({ valentine: v }: DashboardCardProps) {
             </Link>
           )}
           {status === "expired" && (
-            <div className="flex-1 inline-flex items-center justify-center gap-2 text-sm text-rose-300/60 py-2.5 italic">
+            <div className="flex-1 inline-flex items-center justify-center gap-2 text-sm text-rose-400/70 py-2.5 italic">
               <LockIcon className="w-3.5 h-3.5" />
               This love letter has been sealed
             </div>
           )}
         </div>
       </div>
+      {/* Delete confirmation overlay */}
+      {confirmDelete && (
+        <div className="absolute inset-0 z-20 bg-white/95 backdrop-blur-sm rounded-3xl flex flex-col items-center justify-center p-6 text-center">
+          <div className="text-3xl mb-3">{"\u{1F494}"}</div>
+          <p className="text-rose-900 font-bold text-sm mb-1">Delete this valentine?</p>
+          <p className="text-rose-400/70 text-xs mb-5">
+            For {v.recipient_name || "your valentine"} — this cannot be undone.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            <button
+              onClick={() => setConfirmDelete(false)}
+              className="px-5 py-2.5 text-xs font-medium text-rose-600 bg-rose-50 rounded-xl border border-rose-100/50 hover:bg-rose-100/80 transition-colors w-full sm:w-auto"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={async () => {
+                setDeleting(true);
+                try {
+                  await deleteValentine(v.id);
+                  router.refresh();
+                } catch {
+                  setDeleting(false);
+                  setConfirmDelete(false);
+                }
+              }}
+              disabled={deleting}
+              className="px-5 py-2.5 text-xs font-medium text-white bg-red-500 rounded-xl hover:bg-red-600 transition-colors disabled:opacity-50 w-full sm:w-auto"
+            >
+              {deleting ? "Deleting..." : "Delete"}
+            </button>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }
