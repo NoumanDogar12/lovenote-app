@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
-import Link from "next/link";
 import { templates } from "@/lib/templates";
 import { createValentine } from "@/actions/valentines";
+import Navbar from "@/components/Navbar";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -24,20 +24,8 @@ export default function TemplatePicker() {
   }
 
   return (
-    <div className="min-h-screen bg-premium relative overflow-hidden">
-      {/* Decorative blobs */}
-      <div
-        className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full opacity-15 blur-3xl"
-        style={{
-          background: "radial-gradient(circle, rgba(244,63,94,0.3) 0%, transparent 70%)",
-        }}
-      />
-      <div
-        className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full opacity-10 blur-3xl"
-        style={{
-          background: "radial-gradient(circle, rgba(251,113,133,0.3) 0%, transparent 70%)",
-        }}
-      />
+    <div className="min-h-screen bg-valentine relative overflow-hidden">
+      <Navbar />
 
       <div className="max-w-6xl mx-auto px-6 py-12 relative z-10">
         {/* Header */}
@@ -47,16 +35,10 @@ export default function TemplatePicker() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease }}
         >
-          <Link
-            href="/"
-            className="inline-block mb-8 text-xl font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent font-[var(--font-playfair)]"
-          >
-            LoveNote
-          </Link>
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 font-[var(--font-playfair)] mb-4">
+          <h1 className="text-4xl md:text-6xl font-bold text-rose-900 font-[var(--font-playfair)] mb-4">
             Choose Your Style
           </h1>
-          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+          <p className="text-lg text-rose-700/50 max-w-2xl mx-auto">
             Each template creates a unique, beautiful experience.
             Pick one that matches your love story.
           </p>
@@ -69,7 +51,7 @@ export default function TemplatePicker() {
               key={template.id}
               onClick={() => handleSelect(template.id)}
               disabled={loading !== null}
-              className="group text-left glass-card rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-rose-100/40 transition-all duration-500 hover:-translate-y-2 disabled:opacity-60 disabled:cursor-wait"
+              className="group text-left glass-card rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-rose-200/40 transition-all duration-500 hover:-translate-y-2 disabled:opacity-60 disabled:cursor-wait"
               initial={{ opacity: 0, y: 32 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.08, duration: 0.5, ease }}
@@ -121,11 +103,11 @@ export default function TemplatePicker() {
               {/* Info */}
               <div className="p-5">
                 <div className="flex items-center justify-between mb-1">
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-rose-900">
                     {template.name}
                   </h3>
                   <svg
-                    className="w-5 h-5 text-gray-300 group-hover:text-rose-400 group-hover:translate-x-1 transition-all duration-300"
+                    className="w-5 h-5 text-rose-200 group-hover:text-rose-400 group-hover:translate-x-1 transition-all duration-300"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -134,7 +116,7 @@ export default function TemplatePicker() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-rose-700/50">
                   {template.description}
                 </p>
 

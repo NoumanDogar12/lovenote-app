@@ -32,15 +32,15 @@ html {
 
 /* ── Valentine Warm Background ── */
 .bg-valentine {
-  background: linear-gradient(170deg, #FFF0F3 0%, #FECDD3 25%, #FDA4AF 50%, #FECDD3 75%, #FFF0F3 100%);
-  background-size: 400% 400%;
+  background: linear-gradient(170deg, #FFE4E9 0%, #FECDD3 30%, #FDA4AF 50%, #FECDD3 70%, #FFE4E9 100%);
+  background-size: 200% 200%;
   animation: gradient-shift 16s ease infinite;
 }
 
-/* Richer variant for hero sections */
+/* Rich hero background - deep saturated rose */
 .bg-valentine-rich {
-  background: linear-gradient(160deg, #FFE4E6 0%, #FCA5A5 20%, #FB7185 40%, #F9A8D4 60%, #FCA5A5 80%, #FFE4E6 100%);
-  background-size: 400% 400%;
+  background: linear-gradient(160deg, #E8466A 0%, #D42E55 25%, #BE123C 50%, #D42E55 75%, #E8466A 100%);
+  background-size: 200% 200%;
   animation: gradient-shift 14s ease infinite;
 }
 

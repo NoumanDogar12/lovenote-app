@@ -35,14 +35,20 @@ export default async function PreviewPage({
       {/* Publish bar */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-xl border-b border-rose-100/50 px-4 py-3 shadow-sm shadow-rose-50/30">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/dashboard"
+              className="text-lg font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent font-[var(--font-playfair)]"
+            >
+              LoveNote
+            </Link>
+            <span className="text-gray-200">|</span>
             <Link
               href={`/create/${id}`}
               className="text-sm text-gray-400 hover:text-rose-500 transition-colors font-medium"
             >
               &larr; Edit
             </Link>
-            <span className="text-sm text-gray-200">|</span>
             <span className="text-sm font-semibold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
               Preview Mode
             </span>
@@ -51,7 +57,6 @@ export default async function PreviewPage({
           <div className="flex items-center gap-3">
             {isDraft ? (
               <>
-                <span className="text-sm text-gray-400 font-medium">$9.99</span>
                 <PublishButton valentineId={id} />
               </>
             ) : (

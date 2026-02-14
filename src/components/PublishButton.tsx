@@ -14,7 +14,18 @@ export default function PublishButton({
   const handlePublish = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/checkout", {
+      // TODO: Re-enable payment flow when LemonSqueezy is configured
+      // const res = await fetch("/api/checkout", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ valentineId }),
+      // });
+      // const data = await res.json();
+      // if (!res.ok) { alert(data.error || "Something went wrong"); setLoading(false); return; }
+      // if (data.url) { router.push(data.url); }
+
+      // Skip payment: directly publish
+      const res = await fetch("/api/publish", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ valentineId }),
@@ -28,9 +39,7 @@ export default function PublishButton({
         return;
       }
 
-      if (data.url) {
-        router.push(data.url);
-      }
+      router.push(`/create/${valentineId}/success`);
     } catch {
       alert("Something went wrong. Please try again.");
       setLoading(false);
@@ -46,7 +55,7 @@ export default function PublishButton({
       {loading ? (
         <span className="flex items-center gap-2">
           <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-          Redirecting...
+          Publishing...
         </span>
       ) : (
         "Publish & Share"

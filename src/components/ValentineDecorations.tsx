@@ -18,12 +18,13 @@ function HeartBalloon({
   delay: number;
   duration: number;
 }) {
+  // Glossy highlight for hearts - lighter version of the heart color
   const lighter =
-    color === "#BE123C"
-      ? "#F9A8D4"
-      : color === "#E11D48"
-        ? "#FBB6CE"
-        : "#FECDD3";
+    color === "#881337" || color === "#9F1239"
+      ? "#FB7185"
+      : color === "#FDA4AF" || color === "#FECDD3" || color === "#FFF1F2"
+        ? "#FFFFFF"
+        : "#FBB6CE";
   return (
     <motion.div
       className="absolute pointer-events-none"
@@ -72,7 +73,7 @@ function Cloud({ x, y, width, flip }: { x: string; y: string; width: number; fli
         bottom: y,
         width,
         transform: flip ? "scaleX(-1)" : undefined,
-        opacity: 0.7,
+        opacity: 0.85,
       }}
     >
       <svg viewBox="0 0 200 80" fill="none" width="100%">
@@ -101,20 +102,20 @@ function Sparkle({ x, y, delay, size }: { x: string; y: string; delay: number; s
 export default function ValentineDecorations() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {/* Heart balloons */}
-      <HeartBalloon color="#BE123C" size={55} x="5%" y="12%" delay={0} duration={5} />
-      <HeartBalloon color="#E11D48" size={40} x="15%" y="25%" delay={1.2} duration={6} />
-      <HeartBalloon color="#FB7185" size={48} x="82%" y="8%" delay={0.5} duration={5.5} />
-      <HeartBalloon color="#BE123C" size={35} x="90%" y="22%" delay={2} duration={6.5} />
-      <HeartBalloon color="#FDA4AF" size={30} x="75%" y="35%" delay={1.8} duration={5.2} />
-      <HeartBalloon color="#E11D48" size={42} x="8%" y="45%" delay={0.8} duration={6} />
-      <HeartBalloon color="#FB7185" size={28} x="70%" y="55%" delay={2.5} duration={5.8} />
-      <HeartBalloon color="#BE123C" size={38} x="92%" y="48%" delay={1} duration={5.5} />
+      {/* Heart balloons - mix of deep crimson and soft pink for contrast */}
+      <HeartBalloon color="#9F1239" size={55} x="5%" y="12%" delay={0} duration={5} />
+      <HeartBalloon color="#FDA4AF" size={40} x="15%" y="25%" delay={1.2} duration={6} />
+      <HeartBalloon color="#881337" size={48} x="82%" y="8%" delay={0.5} duration={5.5} />
+      <HeartBalloon color="#FECDD3" size={35} x="90%" y="22%" delay={2} duration={6.5} />
+      <HeartBalloon color="#9F1239" size={30} x="75%" y="35%" delay={1.8} duration={5.2} />
+      <HeartBalloon color="#FDA4AF" size={42} x="8%" y="45%" delay={0.8} duration={6} />
+      <HeartBalloon color="#881337" size={28} x="70%" y="55%" delay={2.5} duration={5.8} />
+      <HeartBalloon color="#FECDD3" size={38} x="92%" y="48%" delay={1} duration={5.5} />
 
       {/* Small hearts scattered */}
-      <HeartBalloon color="#FDA4AF" size={20} x="25%" y="15%" delay={3} duration={7} />
-      <HeartBalloon color="#FECDD3" size={18} x="60%" y="18%" delay={2.2} duration={6.8} />
-      <HeartBalloon color="#FB7185" size={22} x="45%" y="60%" delay={1.5} duration={5} />
+      <HeartBalloon color="#FFF1F2" size={20} x="25%" y="15%" delay={3} duration={7} />
+      <HeartBalloon color="#9F1239" size={18} x="60%" y="18%" delay={2.2} duration={6.8} />
+      <HeartBalloon color="#FFF1F2" size={22} x="45%" y="60%" delay={1.5} duration={5} />
 
       {/* Clouds at bottom */}
       <Cloud x="-5%" y="-10px" width={280} />

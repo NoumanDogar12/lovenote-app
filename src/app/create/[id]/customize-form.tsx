@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { templates, askStyles, getTemplate } from "@/lib/templates";
 import { updateValentine } from "@/actions/valentines";
 import PhotoUploader from "@/components/PhotoUploader";
+import Navbar from "@/components/Navbar";
 
 interface Valentine {
   id: string;
@@ -96,32 +97,22 @@ export default function CustomizeForm({
   }, [autoSave]);
 
   return (
-    <div className="min-h-screen bg-premium relative overflow-hidden">
-      {/* Decorative blobs */}
-      <div
-        className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full opacity-10 blur-3xl pointer-events-none"
-        style={{ background: "radial-gradient(circle, rgba(244,63,94,0.3) 0%, transparent 70%)" }}
-      />
+    <div className="min-h-screen bg-valentine relative overflow-hidden">
+      <Navbar />
 
       <div className="max-w-3xl mx-auto px-4 py-8 relative z-10">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <Link
-              href="/"
-              className="text-lg font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent font-[var(--font-playfair)] mb-1 inline-block"
-            >
-              LoveNote
-            </Link>
-            <h1 className="text-3xl font-bold text-gray-900 font-[var(--font-playfair)]">
+            <h1 className="text-3xl font-bold text-rose-900 font-[var(--font-playfair)]">
               Customize Your Valentine
             </h1>
-            <p className="text-gray-400 mt-1 text-sm">
+            <p className="text-rose-700/50 mt-1 text-sm">
               Make it personal, make it beautiful
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-300 font-medium">
+            <span className="text-xs text-rose-400/60 font-medium">
               {saving ? "Saving..." : saved ? "\u2713 Saved" : ""}
             </span>
             <Link
@@ -136,7 +127,7 @@ export default function CustomizeForm({
         <div className="space-y-6">
           {/* Template selector (compact) */}
           <section className="glass-card-strong rounded-2xl p-6 shadow-lg shadow-rose-50/50">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Template</h2>
+            <h2 className="text-sm font-semibold text-rose-800/60 uppercase tracking-wider mb-4">Template</h2>
             <div className="flex gap-3 overflow-x-auto pb-2">
               {templates.map((t) => (
                 <button
@@ -153,16 +144,16 @@ export default function CustomizeForm({
               ))}
             </div>
             {selectedTemplate && (
-              <p className="text-xs text-gray-400 mt-2 font-medium">{selectedTemplate.name}</p>
+              <p className="text-xs text-rose-700/50 mt-2 font-medium">{selectedTemplate.name}</p>
             )}
           </section>
 
           {/* Names */}
           <section className="glass-card-strong rounded-2xl p-6 shadow-lg shadow-rose-50/50">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Names</h2>
+            <h2 className="text-sm font-semibold text-rose-800/60 uppercase tracking-wider mb-4">Names</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-rose-700/50 uppercase tracking-wider mb-1.5">
                   Your Valentine&apos;s Name
                 </label>
                 <input
@@ -175,7 +166,7 @@ export default function CustomizeForm({
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-rose-700/50 uppercase tracking-wider mb-1.5">
                   Your Name
                 </label>
                 <input
@@ -192,20 +183,20 @@ export default function CustomizeForm({
 
           {/* Photos */}
           <section className="glass-card-strong rounded-2xl p-6 shadow-lg shadow-rose-50/50">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Photos</h2>
+            <h2 className="text-sm font-semibold text-rose-800/60 uppercase tracking-wider mb-4">Photos</h2>
             <PhotoUploader valentineId={valentine.id} photos={photos} />
           </section>
 
           {/* Messages */}
           <section className="glass-card-strong rounded-2xl p-6 shadow-lg shadow-rose-50/50">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">Messages</h2>
-            <p className="text-xs text-gray-400 mb-5">
+            <h2 className="text-sm font-semibold text-rose-800/60 uppercase tracking-wider mb-1">Messages</h2>
+            <p className="text-xs text-rose-700/40 mb-5">
               Write messages that appear as your valentine scrolls. Leave blank to skip.
             </p>
             <div className="space-y-5">
               {MESSAGE_SECTIONS.map((section) => (
                 <div key={section.id}>
-                  <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-semibold text-rose-700/50 uppercase tracking-wider mb-1.5">
                     {section.label}
                   </label>
                   <textarea
@@ -231,10 +222,10 @@ export default function CustomizeForm({
 
           {/* Ask Style */}
           <section className="glass-card-strong rounded-2xl p-6 shadow-lg shadow-rose-50/50">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">
+            <h2 className="text-sm font-semibold text-rose-800/60 uppercase tracking-wider mb-1">
               The Big Question Style
             </h2>
-            <p className="text-xs text-gray-400 mb-5">
+            <p className="text-xs text-rose-700/40 mb-5">
               How should the &quot;Will you be my Valentine?&quot; moment feel?
             </p>
             <div className="space-y-3">
@@ -251,10 +242,10 @@ export default function CustomizeForm({
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{style.emoji}</span>
                     <div>
-                      <div className="font-semibold text-gray-900 text-sm">
+                      <div className="font-semibold text-rose-900 text-sm">
                         {style.name}
                       </div>
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-rose-700/50">
                         {style.description}
                       </div>
                     </div>
@@ -266,10 +257,10 @@ export default function CustomizeForm({
 
           {/* Music */}
           <section className="glass-card-strong rounded-2xl p-6 shadow-lg shadow-rose-50/50">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">
+            <h2 className="text-sm font-semibold text-rose-800/60 uppercase tracking-wider mb-1">
               Background Music
             </h2>
-            <p className="text-xs text-gray-400 mb-4">
+            <p className="text-xs text-rose-700/40 mb-4">
               Optional. Paste a YouTube link for background music.
             </p>
             <input
@@ -285,7 +276,7 @@ export default function CustomizeForm({
           <div className="flex justify-between items-center pt-4 pb-8">
             <Link
               href="/create"
-              className="text-gray-400 hover:text-rose-400 text-sm transition-colors font-medium"
+              className="text-rose-700/50 hover:text-rose-500 text-sm transition-colors font-medium"
             >
               &larr; Change Template
             </Link>
