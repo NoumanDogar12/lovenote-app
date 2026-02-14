@@ -30,39 +30,68 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Premium glassmorphism card */
+/* ── Valentine Warm Background ── */
+.bg-valentine {
+  background: linear-gradient(170deg, #FFF0F3 0%, #FECDD3 25%, #FDA4AF 50%, #FECDD3 75%, #FFF0F3 100%);
+  background-size: 400% 400%;
+  animation: gradient-shift 16s ease infinite;
+}
+
+/* Richer variant for hero sections */
+.bg-valentine-rich {
+  background: linear-gradient(160deg, #FFE4E6 0%, #FCA5A5 20%, #FB7185 40%, #F9A8D4 60%, #FCA5A5 80%, #FFE4E6 100%);
+  background-size: 400% 400%;
+  animation: gradient-shift 14s ease infinite;
+}
+
+/* Subtle variant for form pages */
+.bg-premium {
+  background: linear-gradient(135deg, #FFF5F7 0%, #FFF0F3 20%, #FFE4E9 40%, #FFF5F7 60%, #FFEEF2 80%, #FFF5F7 100%);
+  background-size: 400% 400%;
+  animation: gradient-shift 12s ease infinite;
+}
+
+/* ── Glass Cards ── */
 .glass-card {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.7);
 }
 
 .glass-card-strong {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.9);
 }
 
-/* Premium input styling */
+/* Warm variant (tinted) */
+.glass-card-warm {
+  background: rgba(255, 241, 242, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 228, 230, 0.6);
+}
+
+/* ── Premium Input ── */
 .input-premium {
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1.5px solid rgba(244, 63, 94, 0.12);
+  border: 1.5px solid rgba(244, 63, 94, 0.15);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .input-premium:focus {
-  background: rgba(255, 255, 255, 0.9);
-  border-color: rgba(244, 63, 94, 0.4);
-  box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.08), 0 4px 16px rgba(244, 63, 94, 0.06);
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(244, 63, 94, 0.45);
+  box-shadow: 0 0 0 4px rgba(244, 63, 94, 0.1), 0 4px 16px rgba(244, 63, 94, 0.08);
 }
 
-/* Premium button with glow */
+/* ── Buttons ── */
 .btn-premium {
   background: linear-gradient(135deg, #F43F5E 0%, #E11D48 50%, #BE123C 100%);
-  box-shadow: 0 4px 16px rgba(244, 63, 94, 0.3), 0 2px 4px rgba(244, 63, 94, 0.2);
+  box-shadow: 0 4px 20px rgba(225, 29, 72, 0.35), 0 2px 6px rgba(225, 29, 72, 0.2);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
@@ -71,13 +100,13 @@ html {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%, transparent 100%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 50%, transparent 100%);
   opacity: 0;
   transition: opacity 0.3s;
 }
 .btn-premium:hover {
-  box-shadow: 0 8px 32px rgba(244, 63, 94, 0.4), 0 4px 8px rgba(244, 63, 94, 0.3);
-  transform: translateY(-1px);
+  box-shadow: 0 8px 36px rgba(225, 29, 72, 0.45), 0 4px 12px rgba(225, 29, 72, 0.3);
+  transform: translateY(-2px);
 }
 .btn-premium:hover::before {
   opacity: 1;
@@ -86,9 +115,22 @@ html {
   transform: translateY(0);
 }
 
-/* Premium outline button */
+.btn-valentine-outline {
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  color: white;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-valentine-outline:hover {
+  background: rgba(255, 255, 255, 0.35);
+  border-color: white;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
 .btn-outline-premium {
-  border: 1.5px solid rgba(244, 63, 94, 0.25);
+  border: 1.5px solid rgba(244, 63, 94, 0.3);
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(8px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -96,17 +138,11 @@ html {
 .btn-outline-premium:hover {
   border-color: rgba(244, 63, 94, 0.5);
   background: rgba(255, 241, 242, 0.8);
-  box-shadow: 0 4px 16px rgba(244, 63, 94, 0.08);
+  box-shadow: 0 4px 16px rgba(244, 63, 94, 0.1);
   transform: translateY(-1px);
 }
 
-/* Animated gradient background */
-.bg-premium {
-  background: linear-gradient(135deg, #FFF5F7 0%, #FFF0F3 20%, #FFE4E9 40%, #FFF5F7 60%, #FFEEF2 80%, #FFF5F7 100%);
-  background-size: 400% 400%;
-  animation: gradient-shift 12s ease infinite;
-}
-
+/* ── Keyframes ── */
 @keyframes gradient-shift {
   0%, 100% { background-position: 0% 50%; }
   25% { background-position: 100% 25%; }
@@ -114,20 +150,17 @@ html {
   75% { background-position: 0% 75%; }
 }
 
-/* Floating animation for decorative elements */
 @keyframes float {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
-  33% { transform: translateY(-10px) rotate(1deg); }
-  66% { transform: translateY(-5px) rotate(-1deg); }
+  33% { transform: translateY(-12px) rotate(1deg); }
+  66% { transform: translateY(-6px) rotate(-1deg); }
 }
 
-/* Pulse glow for hearts */
 @keyframes pulse-glow {
   0%, 100% { opacity: 0.15; transform: scale(1); }
   50% { opacity: 0.25; transform: scale(1.05); }
 }
 
-/* Shimmer loading effect */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
