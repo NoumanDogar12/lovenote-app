@@ -49,16 +49,35 @@ export default function MusicPlayer({
   // Load YouTube IFrame API
   useEffect(() => {
     if (!videoId) return;
-    if (window.YT) {
+    if (window.YT && window.YT.Player) {
       setApiReady(true);
       return;
     }
 
-    const tag = document.createElement("script");
-    tag.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(tag);
+    // Check if script is already loading
+    const existing = document.querySelector('script[src*="youtube.com/iframe_api"]');
+    if (!existing) {
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(tag);
+    }
 
-    window.onYouTubeIframeAPIReady = () => setApiReady(true);
+    // Store previous callback to chain if needed
+    const prev = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
+      prev?.();
+      setApiReady(true);
+    };
+
+    // Poll as fallback in case callback already fired
+    const poll = setInterval(() => {
+      if (window.YT && window.YT.Player) {
+        setApiReady(true);
+        clearInterval(poll);
+      }
+    }, 200);
+
+    return () => clearInterval(poll);
   }, [videoId]);
 
   const initPlayer = useCallback(() => {
@@ -151,8 +170,8 @@ export default function MusicPlayer({
 
   return (
     <>
-      {/* Hidden player container */}
-      <div ref={containerRef} className="hidden" />
+      {/* Player container — must not be display:none or YT API won't init */}
+      <div ref={containerRef} className="fixed -left-[9999px] -top-[9999px] w-0 h-0 overflow-hidden" />
 
       {/* Play/Pause button */}
       <motion.button
