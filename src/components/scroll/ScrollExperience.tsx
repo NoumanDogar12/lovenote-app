@@ -8,6 +8,7 @@ import StorySection from "./StorySection";
 import BuildupSection from "./BuildupSection";
 import AskSection from "./AskSection";
 import CelebrationSection from "./CelebrationSection";
+import CelebrationOverlay from "@/components/CelebrationOverlay";
 import HeartParticles from "@/components/HeartParticles";
 
 interface ScrollExperienceProps {
@@ -134,11 +135,14 @@ export default function ScrollExperience({
 
       {/* Only show celebration AFTER they click Yes */}
       {saidYes && (
-        <CelebrationSection
-          senderName={senderName}
-          recipientName={recipientName}
-          template={template}
-        />
+        <>
+          <CelebrationOverlay template={template} />
+          <CelebrationSection
+            senderName={senderName}
+            recipientName={recipientName}
+            template={template}
+          />
+        </>
       )}
     </div>
   );

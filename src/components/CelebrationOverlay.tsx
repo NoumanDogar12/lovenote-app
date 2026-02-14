@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { TemplateTheme } from "@/lib/templates";
+import Fireworks from "@/components/Fireworks";
 
 export default function CelebrationOverlay({
   template,
@@ -36,6 +37,20 @@ export default function CelebrationOverlay({
 
   return (
     <div className="fixed inset-0 pointer-events-none z-30 overflow-hidden">
+      {/* Fireworks */}
+      <Fireworks
+        loop={true}
+        interval={3000}
+        colors={[
+          template.colors.primary,
+          template.colors.secondary,
+          template.colors.accent,
+          "#FFD700",
+          "#FF69B4",
+        ]}
+        initialBursts={3}
+      />
+
       {confetti.map((piece) => (
         <motion.div
           key={piece.id}

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { TemplateTheme } from "@/lib/templates";
+import Fireworks from "@/components/Fireworks";
 
 // Flower SVG component
 function FlowerSVG({ color, size }: { color: string; size: number }) {
@@ -249,6 +250,23 @@ export default function CelebrationSection({
 
   return (
     <section className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
+      {/* Fireworks celebration */}
+      <Fireworks
+        loop={true}
+        interval={2000}
+        colors={[
+          template.colors.primary,
+          template.colors.secondary,
+          template.colors.accent,
+          "#FF69B4",
+          "#FFD700",
+          "#C084FC",
+          "#FB7185",
+          "#FBBF24",
+        ]}
+        initialBursts={5}
+      />
+
       {/* Left edge strip — clipped so particles can't enter center */}
       <div className="absolute top-0 left-0 w-[22%] h-full pointer-events-none overflow-hidden">
         <ParticleRenderer particles={leftParticles} />

@@ -32,6 +32,7 @@ export default function MusicPlayer({
   const [isPlaying, setIsPlaying] = useState(false);
   const [faded, setFaded] = useState(false);
   const [apiReady, setApiReady] = useState(false);
+  const [autoStarted, setAutoStarted] = useState(false);
   const playerRef = useRef<{ playVideo: () => void; pauseVideo: () => void; destroy: () => void } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -71,7 +72,7 @@ export default function MusicPlayer({
       playerVars: {
         autoplay: 1,
         loop: 1,
-        playlist: videoId as unknown as number, // YouTube API needs this for loop
+        playlist: videoId as unknown as number,
         controls: 0,
         disablekb: 1,
         fs: 0,
@@ -86,6 +87,35 @@ export default function MusicPlayer({
       },
     });
   }, [videoId, apiReady]);
+
+  // Auto-start music on first user interaction (click, tap, scroll, keypress)
+  useEffect(() => {
+    if (!apiReady || !videoId || autoStarted) return;
+
+    function handleInteraction() {
+      if (!playerRef.current) {
+        initPlayer();
+      }
+      setAutoStarted(true);
+      // Remove all listeners after first trigger
+      window.removeEventListener("click", handleInteraction);
+      window.removeEventListener("touchstart", handleInteraction);
+      window.removeEventListener("scroll", handleInteraction);
+      window.removeEventListener("keydown", handleInteraction);
+    }
+
+    window.addEventListener("click", handleInteraction, { once: true });
+    window.addEventListener("touchstart", handleInteraction, { once: true });
+    window.addEventListener("scroll", handleInteraction, { once: true });
+    window.addEventListener("keydown", handleInteraction, { once: true });
+
+    return () => {
+      window.removeEventListener("click", handleInteraction);
+      window.removeEventListener("touchstart", handleInteraction);
+      window.removeEventListener("scroll", handleInteraction);
+      window.removeEventListener("keydown", handleInteraction);
+    };
+  }, [apiReady, videoId, autoStarted, initPlayer]);
 
   useEffect(() => {
     const timer = setTimeout(() => setFaded(true), 3000);
@@ -103,8 +133,8 @@ export default function MusicPlayer({
 
   const handleToggle = () => {
     if (!playerRef.current) {
-      // First click — initialize player (autoplay)
       initPlayer();
+      setAutoStarted(true);
       setFaded(false);
       return;
     }
