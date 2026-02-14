@@ -1,47 +1,42 @@
+import crypto from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
 import { createServiceClient } from "@/lib/supabase/server";
-import Stripe from "stripe";
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
-  const signature = request.headers.get("stripe-signature");
+  const signature = request.headers.get("x-signature");
 
   if (!signature) {
     return NextResponse.json({ error: "No signature" }, { status: 400 });
   }
 
-  let event: Stripe.Event;
+  // Verify webhook signature (HMAC SHA-256)
+  const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET!;
+  const hmac = crypto.createHmac("sha256", secret);
+  const digest = Buffer.from(hmac.update(body).digest("hex"), "utf8");
+  const sig = Buffer.from(signature, "utf8");
 
-  try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
-  } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    console.error("Webhook signature verification failed:", message);
-    return NextResponse.json(
-      { error: "Invalid signature" },
-      { status: 400 }
-    );
+  if (!crypto.timingSafeEqual(digest, sig)) {
+    console.error("Webhook signature verification failed");
+    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
+  const event = JSON.parse(body);
+  const eventName: string = event.meta?.event_name;
+  const customData = event.meta?.custom_data;
   const supabase = createServiceClient();
 
-  switch (event.type) {
-    case "checkout.session.completed": {
-      const session = event.data.object as Stripe.Checkout.Session;
-      const valentineId = session.metadata?.valentine_id;
-      const userId = session.metadata?.user_id;
+  switch (eventName) {
+    case "order_created": {
+      const valentineId = customData?.valentine_id;
+      const userId = customData?.user_id;
 
       if (!valentineId || !userId) {
-        console.error("Missing metadata in checkout session");
+        console.error("Missing custom_data in order_created event");
         break;
       }
 
-      // Idempotency check - don't re-process if already published
+      // Idempotency check
       const { data: existing } = await supabase
         .from("valentines")
         .select("status")
@@ -52,6 +47,7 @@ export async function POST(request: NextRequest) {
         break;
       }
 
+      const orderData = event.data?.attributes;
       const now = new Date();
       const expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days
 
@@ -72,24 +68,19 @@ export async function POST(request: NextRequest) {
       await supabase.from("payments").insert({
         user_id: userId,
         valentine_id: valentineId,
-        stripe_session_id: session.id,
-        stripe_payment_intent_id:
-          typeof session.payment_intent === "string"
-            ? session.payment_intent
-            : session.payment_intent?.id || null,
-        amount_cents: session.amount_total || 999,
+        stripe_session_id: String(orderData?.order_number || event.data?.id || ""),
+        stripe_payment_intent_id: String(event.data?.id || ""),
+        amount_cents: orderData?.total || 999,
         status: "completed",
       });
 
       break;
     }
 
-    case "checkout.session.async_payment_failed": {
-      const session = event.data.object as Stripe.Checkout.Session;
-      const valentineId = session.metadata?.valentine_id;
+    case "order_refunded": {
+      const valentineId = customData?.valentine_id;
 
       if (valentineId) {
-        // Revert to draft so user can retry
         await supabase
           .from("valentines")
           .update({

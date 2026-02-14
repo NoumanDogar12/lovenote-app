@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { stripe, PRICE_AMOUNT } from "@/lib/stripe";
+import { createCheckout } from "@lemonsqueezy/lemonsqueezy.js";
+import { initLemonSqueezy, STORE_ID, VARIANT_ID } from "@/lib/lemonsqueezy";
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
@@ -43,30 +44,31 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Create Stripe Checkout Session
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ["card"],
-    line_items: [
-      {
-        price_data: {
-          currency: "usd",
-          product_data: {
-            name: "LoveNote Valentine",
-            description: `Valentine for ${valentine.recipient_name || "your special someone"}`,
-          },
-          unit_amount: PRICE_AMOUNT,
-        },
-        quantity: 1,
+  // Create LemonSqueezy Checkout
+  initLemonSqueezy();
+
+  const { data: checkout, error: lsError } = await createCheckout(STORE_ID, VARIANT_ID, {
+    checkoutData: {
+      email: user.email || undefined,
+      custom: {
+        valentine_id: valentineId,
+        user_id: user.id,
       },
-    ],
-    mode: "payment",
-    success_url: `${process.env.NEXT_PUBLIC_URL}/create/${valentineId}/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.NEXT_PUBLIC_URL}/preview/${valentineId}`,
-    metadata: {
-      valentine_id: valentineId,
-      user_id: user.id,
+    },
+    productOptions: {
+      name: "LoveNote Valentine",
+      description: `Valentine for ${valentine.recipient_name || "your special someone"}`,
+      redirectUrl: `${process.env.NEXT_PUBLIC_URL}/create/${valentineId}/success`,
     },
   });
+
+  if (lsError || !checkout) {
+    console.error("LemonSqueezy checkout error:", lsError);
+    return NextResponse.json(
+      { error: "Failed to create checkout" },
+      { status: 500 }
+    );
+  }
 
   // Update valentine status to payment_pending
   await supabase
@@ -74,5 +76,7 @@ export async function POST(request: NextRequest) {
     .update({ status: "payment_pending", updated_at: new Date().toISOString() })
     .eq("id", valentineId);
 
-  return NextResponse.json({ url: session.url });
+  const checkoutUrl = checkout.data.attributes.url;
+
+  return NextResponse.json({ url: checkoutUrl });
 }
