@@ -35,6 +35,7 @@ export default function MusicPlayer({
   const [autoStarted, setAutoStarted] = useState(false);
   const playerRef = useRef<{ playVideo: () => void; pauseVideo: () => void; destroy: () => void } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const userInteractedRef = useRef(false);
 
   // Extract YouTube video ID
   const getVideoId = (url: string) => {
@@ -107,16 +108,53 @@ export default function MusicPlayer({
     });
   }, [videoId, apiReady]);
 
-  // Auto-start music on first user interaction (click, tap, scroll, keypress)
+  // Track user interaction from mount — runs before API is ready
+  useEffect(() => {
+    if (!videoId || autoStarted) return;
+
+    function markInteracted() {
+      userInteractedRef.current = true;
+      cleanup();
+    }
+
+    function cleanup() {
+      window.removeEventListener("click", markInteracted);
+      window.removeEventListener("touchstart", markInteracted);
+      window.removeEventListener("scroll", markInteracted);
+      window.removeEventListener("keydown", markInteracted);
+    }
+
+    // If user already scrolled (pasted URL, scrolled before JS loaded)
+    if (window.scrollY > 0) {
+      userInteractedRef.current = true;
+    } else {
+      window.addEventListener("click", markInteracted, { once: true });
+      window.addEventListener("touchstart", markInteracted, { once: true });
+      window.addEventListener("scroll", markInteracted, { once: true });
+      window.addEventListener("keydown", markInteracted, { once: true });
+    }
+
+    return cleanup;
+  }, [videoId, autoStarted]);
+
+  // When API is ready + user has interacted → start player
   useEffect(() => {
     if (!apiReady || !videoId || autoStarted) return;
 
-    function handleInteraction() {
-      if (!playerRef.current) {
-        initPlayer();
-      }
+    if (userInteractedRef.current) {
+      initPlayer();
       setAutoStarted(true);
-      // Remove all listeners after first trigger
+      return;
+    }
+
+    // API is ready but user hasn't interacted yet — listen for it
+    function handleInteraction() {
+      initPlayer();
+      setAutoStarted(true);
+      cleanup();
+    }
+
+    function cleanup() {
       window.removeEventListener("click", handleInteraction);
       window.removeEventListener("touchstart", handleInteraction);
       window.removeEventListener("scroll", handleInteraction);
@@ -128,12 +166,7 @@ export default function MusicPlayer({
     window.addEventListener("scroll", handleInteraction, { once: true });
     window.addEventListener("keydown", handleInteraction, { once: true });
 
-    return () => {
-      window.removeEventListener("click", handleInteraction);
-      window.removeEventListener("touchstart", handleInteraction);
-      window.removeEventListener("scroll", handleInteraction);
-      window.removeEventListener("keydown", handleInteraction);
-    };
+    return cleanup;
   }, [apiReady, videoId, autoStarted, initPlayer]);
 
   useEffect(() => {
