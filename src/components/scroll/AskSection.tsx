@@ -12,6 +12,7 @@ interface AskSectionProps {
   valentineId: string;
   closingMessage: string;
   isPreview: boolean;
+  onYes: () => void;
 }
 
 export default function AskSection({
@@ -22,13 +23,13 @@ export default function AskSection({
   valentineId,
   closingMessage,
   isPreview,
+  onYes,
 }: AskSectionProps) {
   const [answered, setAnswered] = useState(false);
-  const [showCelebration, setShowCelebration] = useState(false);
 
   const handleYes = useCallback(async () => {
     setAnswered(true);
-    setShowCelebration(true);
+    onYes();
 
     if (!isPreview) {
       try {
@@ -49,9 +50,9 @@ export default function AskSection({
         behavior: "smooth",
       });
     }, 1500);
-  }, [isPreview, valentineId]);
+  }, [isPreview, valentineId, onYes]);
 
-  if (showCelebration) return null; // CelebrationSection takes over
+  if (answered) return null;
 
   return (
     <section
@@ -101,34 +102,32 @@ export default function AskSection({
           - {senderName || "Your Secret Admirer"}
         </motion.p>
 
-        {!answered && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 1 }}
-          >
-            {askStyle === "playful_dodge" && (
-              <PlayfulDodge
-                template={template}
-                onYes={handleYes}
-              />
-            )}
-            {askStyle === "cute_guilt" && (
-              <CuteGuilt
-                template={template}
-                onYes={handleYes}
-                recipientName={recipientName}
-              />
-            )}
-            {askStyle === "sincere" && (
-              <Sincere
-                template={template}
-                onYes={handleYes}
-              />
-            )}
-          </motion.div>
-        )}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 1 }}
+        >
+          {askStyle === "playful_dodge" && (
+            <PlayfulDodge
+              template={template}
+              onYes={handleYes}
+            />
+          )}
+          {askStyle === "cute_guilt" && (
+            <CuteGuilt
+              template={template}
+              onYes={handleYes}
+              recipientName={recipientName}
+            />
+          )}
+          {askStyle === "sincere" && (
+            <Sincere
+              template={template}
+              onYes={handleYes}
+            />
+          )}
+        </motion.div>
       </motion.div>
     </section>
   );

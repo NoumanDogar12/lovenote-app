@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { TemplateTheme } from "@/lib/templates";
 import IntroSection from "./IntroSection";
@@ -34,6 +34,7 @@ export default function ScrollExperience({
 }: ScrollExperienceProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll();
+  const [saidYes, setSaidYes] = useState(false);
 
   const sortedPhotos = [...photos].sort((a, b) => a.sort_order - b.sort_order);
 
@@ -42,6 +43,25 @@ export default function ScrollExperience({
 
   // Progress bar
   const progressWidth = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
+
+  // Build story sections — only include sections that have a message or photo (no empty slots)
+  const storySections: { message: string; photo?: string; index: number }[] = [];
+
+  if (getMessage("story1") || sortedPhotos[0]) {
+    storySections.push({ message: getMessage("story1"), photo: sortedPhotos[0]?.public_url, index: 0 });
+  }
+  sortedPhotos.slice(1, 4).forEach((photo, i) => {
+    storySections.push({ message: i === 0 ? getMessage("story2") : "", photo: photo.public_url, index: i + 1 });
+  });
+  if (getMessage("story3") || sortedPhotos[4]) {
+    storySections.push({ message: getMessage("story3"), photo: sortedPhotos[4]?.public_url, index: 4 });
+  }
+  sortedPhotos.slice(5).forEach((photo, i) => {
+    storySections.push({ message: "", photo: photo.public_url, index: i + 5 });
+  });
+
+  // Filter out sections with no message AND no photo
+  const filteredStory = storySections.filter((s) => s.message || s.photo);
 
   return (
     <div
@@ -85,43 +105,14 @@ export default function ScrollExperience({
         template={template}
       />
 
-      {/* Story sections - pair photos with messages */}
-      {getMessage("story1") && (
+      {/* Story sections — only rendered if they have content */}
+      {filteredStory.map((s) => (
         <StorySection
-          message={getMessage("story1")}
-          photo={sortedPhotos[0]?.public_url}
+          key={`story-${s.index}`}
+          message={s.message}
+          photo={s.photo}
           template={template}
-          index={0}
-        />
-      )}
-
-      {sortedPhotos.slice(1, 4).map((photo, i) => (
-        <StorySection
-          key={photo.public_url}
-          message={i === 0 ? getMessage("story2") : ""}
-          photo={photo.public_url}
-          template={template}
-          index={i + 1}
-        />
-      ))}
-
-      {getMessage("story3") && (
-        <StorySection
-          message={getMessage("story3")}
-          photo={sortedPhotos[4]?.public_url}
-          template={template}
-          index={4}
-        />
-      )}
-
-      {/* Remaining photos */}
-      {sortedPhotos.slice(5).map((photo, i) => (
-        <StorySection
-          key={photo.public_url}
-          message=""
-          photo={photo.public_url}
-          template={template}
-          index={i + 5}
+          index={s.index}
         />
       ))}
 
@@ -138,13 +129,17 @@ export default function ScrollExperience({
         valentineId={valentineId}
         closingMessage={getMessage("closing")}
         isPreview={isPreview}
+        onYes={() => setSaidYes(true)}
       />
 
-      <CelebrationSection
-        senderName={senderName}
-        recipientName={recipientName}
-        template={template}
-      />
+      {/* Only show celebration AFTER they click Yes */}
+      {saidYes && (
+        <CelebrationSection
+          senderName={senderName}
+          recipientName={recipientName}
+          template={template}
+        />
+      )}
     </div>
   );
 }
