@@ -34,33 +34,31 @@ export default async function PreviewPage({
     <>
       {/* Publish bar */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-xl border-b border-rose-100/50 px-4 py-3 shadow-sm shadow-rose-50/30">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="max-w-4xl mx-auto flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
             <Link
               href="/dashboard"
-              className="text-lg font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent font-[var(--font-playfair)]"
+              className="text-base sm:text-lg font-bold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent font-[var(--font-playfair)] flex-shrink-0"
             >
               LoveNote
             </Link>
-            <span className="text-gray-200">|</span>
+            <span className="text-gray-200 hidden sm:inline">|</span>
             <Link
               href={`/create/${id}`}
-              className="text-sm text-gray-400 hover:text-rose-500 transition-colors font-medium"
+              className="text-xs sm:text-sm text-gray-500 hover:text-rose-500 transition-colors font-medium flex-shrink-0"
             >
               &larr; Edit
             </Link>
-            <span className="text-sm font-semibold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
+            <span className="text-xs sm:text-sm font-semibold bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent hidden sm:inline">
               Preview Mode
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             {isDraft ? (
-              <>
-                <PublishButton valentineId={id} />
-              </>
+              <PublishButton valentineId={id} />
             ) : (
-              <span className="text-sm font-semibold text-emerald-500 flex items-center gap-1.5">
+              <span className="text-xs sm:text-sm font-semibold text-emerald-500 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                 Published
               </span>

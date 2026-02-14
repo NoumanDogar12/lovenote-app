@@ -102,22 +102,22 @@ export default function CustomizeForm({
 
       <div className="max-w-3xl mx-auto px-4 py-8 relative z-10">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col items-center text-center sm:flex-row sm:items-center sm:text-left sm:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-rose-900 font-[var(--font-playfair)]">
+            <h1 className="text-2xl sm:text-3xl font-bold text-rose-900 font-[var(--font-playfair)]">
               Customize Your Valentine
             </h1>
-            <p className="text-rose-700/50 mt-1 text-sm">
+            <p className="text-rose-800/50 mt-1 text-sm">
               Make it personal, make it beautiful
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-rose-400/60 font-medium">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <span className="text-xs text-rose-500/60 font-medium">
               {saving ? "Saving..." : saved ? "\u2713 Saved" : ""}
             </span>
             <Link
               href={`/preview/${valentine.id}`}
-              className="btn-premium text-white px-5 py-2.5 rounded-xl font-medium text-sm"
+              className="btn-premium text-white px-5 py-2.5 rounded-xl font-medium text-sm flex-1 sm:flex-none text-center"
             >
               Preview
             </Link>
@@ -190,7 +190,7 @@ export default function CustomizeForm({
           {/* Messages */}
           <section className="glass-card-strong rounded-2xl p-6 shadow-lg shadow-rose-50/50">
             <h2 className="text-sm font-semibold text-rose-800/60 uppercase tracking-wider mb-1">Messages</h2>
-            <p className="text-xs text-rose-700/40 mb-5">
+            <p className="text-xs text-rose-700/50 mb-5">
               Write messages that appear as your valentine scrolls. Leave blank to skip.
             </p>
             <div className="space-y-5">
@@ -212,7 +212,7 @@ export default function CustomizeForm({
                     placeholder={section.placeholder}
                     maxLength={500}
                   />
-                  <span className="text-[10px] text-gray-300 font-medium">
+                  <span className="text-[10px] text-rose-400/50 font-medium">
                     {(messages[section.id] || "").length}/500
                   </span>
                 </div>
@@ -225,7 +225,7 @@ export default function CustomizeForm({
             <h2 className="text-sm font-semibold text-rose-800/60 uppercase tracking-wider mb-1">
               The Big Question Style
             </h2>
-            <p className="text-xs text-rose-700/40 mb-5">
+            <p className="text-xs text-rose-700/50 mb-5">
               How should the &quot;Will you be my Valentine?&quot; moment feel?
             </p>
             <div className="space-y-3">
@@ -260,7 +260,7 @@ export default function CustomizeForm({
             <h2 className="text-sm font-semibold text-rose-800/60 uppercase tracking-wider mb-1">
               Background Music
             </h2>
-            <p className="text-xs text-rose-700/40 mb-4">
+            <p className="text-xs text-rose-700/50 mb-4">
               Optional. Paste a YouTube link for background music.
             </p>
             <input
@@ -273,16 +273,16 @@ export default function CustomizeForm({
           </section>
 
           {/* Action buttons */}
-          <div className="flex justify-between items-center pt-4 pb-8">
+          <div className="flex flex-col-reverse sm:flex-row justify-between items-center gap-3 pt-4 pb-8">
             <Link
               href="/create"
-              className="text-rose-700/50 hover:text-rose-500 text-sm transition-colors font-medium"
+              className="text-rose-700/60 hover:text-rose-500 text-sm transition-colors font-medium w-full sm:w-auto text-center"
             >
               &larr; Change Template
             </Link>
             <Link
               href={`/preview/${valentine.id}`}
-              className="btn-premium text-white px-8 py-3 rounded-xl font-semibold"
+              className="btn-premium text-white px-8 py-3 rounded-xl font-semibold w-full sm:w-auto text-center"
             >
               Preview Your Valentine
             </Link>

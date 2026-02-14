@@ -81,7 +81,7 @@ export default function SuccessPage({
             </p>
             <Link
               href="/dashboard"
-              className="btn-premium inline-block text-white px-8 py-3 rounded-xl font-semibold"
+              className="btn-premium inline-block text-center text-white px-8 py-3 rounded-xl font-semibold w-full sm:w-auto"
             >
               Go to Dashboard
             </Link>
@@ -100,19 +100,19 @@ export default function SuccessPage({
           <h1 className="text-3xl font-bold text-rose-900 mb-2 font-[var(--font-playfair)]">
             Your Valentine is live!
           </h1>
-          <p className="text-rose-700/50 mb-8 text-sm">
+          <p className="text-rose-800/50 mb-8 text-sm">
             Share this link with your special someone. They have 30 days to
             experience it.
           </p>
 
           {/* Share panel with link, QR code, share buttons */}
-          <div className="glass-card-strong rounded-2xl p-6 shadow-lg shadow-rose-100/30 mb-8 text-left">
+          <div className="glass-card-strong rounded-2xl p-4 sm:p-6 shadow-lg shadow-rose-100/30 mb-8 text-left">
             <SharePanel shareLink={shareLink} recipientName="" />
           </div>
 
           <Link
             href="/dashboard"
-            className="text-rose-700/50 hover:text-rose-500 text-sm transition-colors font-medium"
+            className="text-rose-700/60 hover:text-rose-500 text-sm transition-colors font-medium"
           >
             Go to Dashboard &rarr;
           </Link>
